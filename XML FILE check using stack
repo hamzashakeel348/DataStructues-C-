@@ -1,0 +1,913 @@
+#include "pch.h"
+#include<iostream>
+#include<fstream>
+#include<sstream>
+using namespace std;
+
+template<class T>
+class Node//STACK WITH LINKED LIST IS IMPLEMENTED IN THIS CODE
+{
+public:
+	T data;
+	int no;
+	Node<T>* next;//NEXT POINTER USED FOR USING NEXT VALUE OR SPACE IN STACK
+	Node()
+	{
+		next = nullptr;
+	}
+};
+template<class T>
+class Stack
+{
+private:
+	Node<T>* top;
+public:
+	Stack()//CONSTRUCTOR.
+	{
+		top = nullptr;
+	}
+
+	bool IsEmpty()//fUNCTION TO CHECK EMPTY STACK
+	{
+		if (top == nullptr)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	bool push(const T& val)//PUSH FUNCTION FOR STACK
+	{
+		Node<T>* temp = new Node<T>();//AUXILIARY POINTER CREATED TO PUSH THE VALUE BY USING IT
+
+		if (top == nullptr)//CHECKING FOR STACK IF IT IS EMPTY
+		{
+			temp->data = val;
+
+			top = temp;
+			return true;
+		}
+		else//DATA ENTERING IN OTHERS SPACES EXCEPT FIRST ONE
+		{
+			temp->data = val;
+
+			temp->next = top;
+
+			top = temp;
+		}
+
+	}
+	T pop()//POP FUNCTION FOR STACK,IT POPS THE VALUE
+	{
+		T a;
+		Node<T>* temp = new Node<T>();
+
+		// EMPTY STACK
+		if (top == NULL) {
+			cout << "Stack Empty" << endl;
+			exit(1);
+		}
+		else {
+			temp = top;
+			top = top->next;
+			temp->next = NULL;
+			a = temp->data;
+			delete temp;
+		}
+		return a;//POPPED VALUE STORED IN A AND RETURNED
+	}
+
+	void print()//PRINT FUNCTION TO DISPLAY ALL VALUES OF STACK
+	{
+		Node<T>* temp = new Node<T>();//AUXILIARY POINTER
+
+		if (top == NULL) {
+			cout << "Stack Empty" << endl;
+			exit(1);
+		}
+		else {
+			temp = top;
+			while (temp != NULL) {
+
+				cout << temp->data << " ";//REPRESENTING DATA OF STACKS
+				temp = temp->next;
+			}
+		}
+
+	}
+	int size()//FUNCTION WITH INT RETURN TYPE TO GET THE SIZE OF STACK
+	{
+		int x = 0;
+		Node<T>* temp = new Node<T>();
+
+		if (top == NULL) {
+			cout << "Stack Empty" << endl;
+			exit(1);
+		}
+		else {
+			temp = top;
+			while (temp != NULL) {
+
+				x++;
+				temp = temp->next;
+			}
+		}
+		return x;
+
+	}
+	~Stack()
+	{
+		delete top;
+	}
+};
+
+class xmldata//CLASS FOR PERFORMING XML OPERATIONS
+{
+private:
+	string tag;
+	Stack<char> inc;
+	Stack<string>inc1;
+	Stack<string>inc2;
+	int line_no;
+	int o, c = 1;
+	bool open_tag;
+
+public:
+	xmldata()//CONSTRCUTOR OF XML CLASS
+	{
+		line_no = 0;
+		open_tag = false;
+		tag = '-';
+	}
+	xmldata(string TAG, int LINE)//PARAMETRIZED CONSTRCTOR OF XML CLASS
+	{
+		tag = TAG;
+		line_no = LINE;
+	}
+	void readdatafromfile(string filename)//FUNCTION WHICH IS USED TO CHECK THE FIRST LINE OF THE XML FILE
+	{
+
+		fstream fin(filename);
+		char special[1];
+		int c1 = 0;
+		int c2 = -1;
+		int c3 = 0;
+		if (fin.is_open())
+		{
+			int i = 0;
+			while (!fin.eof())//AS WE KNOW THE PATTERN OF XML FILE FIRST LINE IT STARTS FROM <? AND ENDS AT ?>
+			{
+				fin >> special[i];
+				if (special[i] == '<')
+				{
+					inc.push(special[i]);
+				}
+				else if (special[i] == '?')
+				{
+					inc.push(special[i]);
+				}
+				else if (special[i] == '>')
+				{
+					inc.push(special[i]);
+					break;
+				}
+				else if (special[i] == '"')
+				{
+					c3++;
+				}
+
+			}
+			if (c3 == 4)//CHECKING THE NO QUOTATION MARKS. THEY SHOULD BE ALWAYS  4 FOR THE FIRST LINE  
+			{//SO CHECKING THEM IF THEY WERE GREATER THEN 2 OR LESS THEN 2 THEN FIRST LINE IS MISMATCHED
+				while (!inc.IsEmpty())
+				{
+					char a = inc.pop();//NOW WHEN IF CONDITION IS TRUE THEN WE POP THE STACK TO CHECK THE SYMBOLS FOR FIRST LINE
+					if (a == '>')
+					{
+						a = inc.pop();
+						if (a == '?')
+						{
+							a = inc.pop();
+							if (a == '?')
+							{
+								a = inc.pop();
+								if (a == '<')
+								{
+									cout << "First line of file is okay" << endl << endl;//IF ALL CONDITIONS MEET THEN IT MEANS FILE IS OKAY
+								}
+							}
+							else {
+								cout << "File not correct" << endl << endl;
+							}
+						}
+						else
+						{
+							cout << "File not correct" << endl << endl;
+						}
+					}
+					else {
+						cout << "File not correct" << endl << endl;
+					}
+				}
+			}
+			else {
+				cout << "QUOTES in PROLOGE are mismatched" << endl << endl;//QUOTATION MARKS ARE NOT MATCHED
+
+			}
+			c3 = 0;
+			while (!fin.eof())
+			{
+				fin >> special[i];
+				if (special[i] == '<')
+				{
+					c1++;//COUNTING NO OF OPENING SYMBOLS IN THE XML FILE
+				}
+				else if (special[i] == '>')
+				{
+					c2++;//COUNTING NO OF CLOSING SYMBOLS IN THE XML FILE
+				}
+				else if (special[i] == '"')
+				{
+					c3++;//COUNTING THE NO OF QUOTATION MARKS IN ALL FILE EXCEPT THE FIRST LINE BCZ FIRST LINE IS ALREADY CHECKED.
+				}
+			}
+			fin.close();
+			if (c1 == c2)//COMPARING THE TAGS NO TO DETECT ERROR
+			{
+				cout << "Yes, They have same no of Opening and closing Tags" << endl << endl;
+			}
+			else
+			{
+				cout << "They Donot have same no of Opening tags and closing tags" << endl << endl;
+			}
+			if (c3 % 2 == 0)//TAKING THE MODE OF TOTAL QUOTATION MARKS WITH 2 BCZ THEY SHOULD BE IN EVEN NO IN CORRECT FILE.
+			{
+				cout << "File has Even no of QUOTATION MARKS which means file is correct" << endl << endl;
+			}
+			else
+			{
+				cout << "File has Odd no of QUOTATION MARKS which means file is not correct" << endl << endl;
+			}
+
+
+		}
+		else
+			cout << "error in file opening\n" << endl << endl;
+	}
+	void opentag(string file)//THIS FUNCTION IS USED TO STORE ALL THE OPENING TAGS OF THE FILE IN A STACK
+	{
+		fstream in(file);//FILE OPENING
+		char s[1];
+		string a;
+		int n = 0, t = 0;
+		if (in.is_open())
+		{
+			int i = 0;
+			while (getline(in, a))//GETLINE IS USED TO PICK THE WHOLE TAG INSTEAD OF PICKING IT INDEX BY INDEX
+			{
+				in >> s[i];
+				if (s[i] == '<')//THIS CHECK IS FOR OPENING TAGS
+				{
+					stringstream ss(a);//BUILTIN LIBRARY STRINGSTREAM IS USED TO STORE A STRING VARIABLE
+					getline(ss, tag, '>');//THIS GET LINE WILL TAKE THE LINE TILL THE CLOSING SYMBOL
+					line_no++;//AS WE TAKE AN OPENING TAG WE INCERMENT THE LINE NO SO THAT LINENO WILL BE CALCULATED TILL END OF FILE
+					stringstream sa(tag);//ANOTHER STRING STREAM IS USED FOR THE LINE PICKED SO THAT WE CAN CHECK FOR ATTRIBUTES
+					getline(sa, tag, ' ');//AS ATTRIBUTES SHOULD NOT BE INCLUDED SO WE CHECK TILL THE FIRST SPACE, WHERE FIRST SPACE OCCURS IT STOPS.
+					if (tag[0] == '/' || tag[0] == '?' || tag[0] == '!')//WE CHECK FOR ALL THESE SYMBOLS IF THEY WERE AT THE STARTING INDEX
+					{//IT MEANS THIS IS NOT A OPENING TAG / REPRESENTS CLOSING TAG ? REPRESENTS PROLOGE ! REPRESENTS COMMENTING
+
+					}
+					else
+					{
+						inc1.push(tag);//THE TAG PICKED IS NOW PUSHED IN STACK
+						o++;//THIS INCREMENT IS TO KEEP THE COUNTER OF OPENING TAGS
+					}
+				}
+			}
+		}
+	}
+
+	void clostag(string file)//FUNCTION WHICH IS USED FOR STROING ALL CLOSING TAGS
+	{
+		fstream in(file);//FILING VARIABLE CREATED
+		char s[1];
+		string a;
+		while (!in.eof())//COMPILE TILL END OF FILE
+		{
+			int i = 0;
+			in >> s[i];
+			if (s[i] == '<')//THIS CHECK IS FOR OPENING TAGS
+			{
+				in >> s[i];
+				if (s[i] == '/')//NOW AFTER OPENING TAG WE CHECK FOR / IF IT IS PRESENT THEN IT IS A CLOSING TAG OTHERWISE IT IS NOT
+				{
+					getline(in, a);
+					stringstream ss(a); // BUILTIN LIBRARY STRINGSTREAM IS USED TO STORE A STRING VARIABLE
+					getline(ss, tag, '>');//THIS GET LINE WILL TAKE THE LINE TILL THE CLOSING SYMBOL
+
+					stringstream sa(tag);//ANOTHER STRING STREAM IS USED FOR THE LINE PICKED SO THAT WE CAN CHECK FOR ATTRIBUTES
+					getline(sa, tag, ' ');//AS ATTRIBUTES SHOULD NOT BE INCLUDED SO WE CHECK TILL THE FIRST SPACE, WHERE FIRST SPACE OCCURS IT STOPS.
+					inc2.push(tag);//THE TAG PICKED IS NOW PUSHED IN STACK
+					c++;//THIS INCREMENT IS TO KEEP THE COUNTER OF OPENING TAGS
+					i++;//THIS COUNTER IS USED TO KEEP THE WHILE LOOP FOR ONLY 1 TAG AT A TIME
+
+				}
+			}
+		}
+	}
+	void print()//PRINT FUNCTION TO SHOW ALL THE OUTPUT
+	{
+		string arr[50];//TWO STATIC ARRAYS ARE USED FOR COMPARING STACKS
+		string arr1[50];
+
+		int A1 = 0;
+		int A2 = 0;
+		int q = 0;
+		int r = 0;
+		int x = inc1.size() + 1;//SIZE OF STACK IS USED
+		while (!inc1.IsEmpty())//FIRST ARRAY IS POPULATED TILL THE STACK IS EMPTY
+		{
+			arr[q] = inc1.pop();//INDEX WISE POPULATION IS DONE
+			q++;
+			A1++;
+		}
+		q--;
+		while (!inc2.IsEmpty())//SECOND ARRAY IS POPULATED TILL THE NEXT STACK IS EMPTY
+		{
+			arr1[r] = inc2.pop();//INDEX WISE POPULATION IS DONE
+			r++;
+			A2++;
+		}
+		int miss = 0;//IT IS USED TO GIVE THE NO OF WRONG TAGS
+		for (int i = 0; i < q; i++)
+		{
+			open_tag = false;//IT IS A PRIVATE MEMBER OF A CLASS
+			for (int j = 0; j < r;)//NESTED FOR IS USED FOR COMPARISION
+			{
+				if (arr[i] == arr1[j])
+				{
+					open_tag = true;//WHEN TAGS IS FOUND OPEN_TAG IS SET TO TRUE MEANS IT IS PRESENT
+					arr1[j] = " ";
+					j = r;
+				}
+				else
+					j++;
+			}
+			if (open_tag == false)//IF TAG IS NOT FOUND
+			{
+				cout << "Mismatch occured on line no : " << x << endl << endl;//IT WILL GIVE THE LINENO ON WHICH THE ERRORED TAG IS PRESENT
+				cout << "Mismatched Tag : " << arr[i] << endl << endl;
+				miss++;
+			}
+			x--;
+		}
+		if (o > c) {//THIS COMPARSION IS TO COMPARE THE NO OF OPENING TAGS AND CLOSING TAGS
+			int p = o - c;
+			cout << x << " Extra Opening tag" << endl;//IF OPEING TAGS ARE MORE IT WILL GIVE THE COUNT FOR THE TAGS THAT ARE MISMATCHED
+		}
+		else if (c > o)
+		{
+			int q = c - o;
+			cout << x << "Extra Closing tag " << endl;//IF OPENING TAGS ARE MORE IT WILL GIVE THE COUNT FOR THE TAGS THAT ARE MISMATCHED
+		}
+		cout << "No of INCORRECT TAGS : " << miss << endl;//IT WILL GIVE THE COUNT FOR INCORRECT TAGS/ MISSMATHCED TAGS
+
+		cout << endl;
+		cout << "Total No of Lines in Code : " << line_no << endl << endl;//IT WILL GIVE THE TOTAL NO OF LINES IN THE CODE
+	}
+	void checkcommet(string file)//THIS FUNCTION IS USED FOR CHECKING THE COMMENTS IN THE XML FILE
+	{
+		fstream in(file);
+		char s[1];
+		string a;
+		while (!in.eof())
+		{
+			int i = 0;
+			in >> s[i];
+			if (s[i] == '<')//THIS ARRANGEMENT IS CHECK AS ACCORDING TO STANDARD SYNTAX OF COMMENTS IN XML FILE
+			{//STANDARD SYNTAX IS <!--...................-->
+				inc.push(s[i]);
+				in >> s[i];
+				if (s[i] == '!')
+				{
+					inc.push(s[i]);
+					in >> s[i];
+				}
+				if (s[i] == '-')
+				{
+					inc.push(s[i]);
+					in >> s[i];
+				}
+				if (s[i] == '>')
+				{
+					inc.push(s[i]);
+					break;
+				}
+			}
+		}
+		while (!inc.IsEmpty())//AGAIN WE DO THE CHECKING OF POOPED ELEMENTS TO SEE IF THE STANDARD SYNTAX OF COMMENTS IS FULFILLED OR NOT
+		{
+			char a = inc.pop();
+			if (a == '>')
+			{
+				a = inc.pop();
+				if (a == '-')
+				{
+					a = inc.pop();
+					if (a == '-')
+					{
+						a = inc.pop();
+						if (a == '-')
+						{
+							a = inc.pop();
+							if (a == '-')
+							{
+								a = inc.pop();
+								if (a == '!')
+								{
+									a = inc.pop();
+									if (a == '<')
+									{
+										cout << "comments are Maintained" << endl;
+									}
+
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+};
+int main()//MAIN FOR THE GIVEN CODE
+{
+	xmldata obj;//OBJ FOR XML CLASS
+	cout << "\t\t\t\t\t\t(:WELCOME TO XML CHECKER :)" << endl << endl;
+	obj.readdatafromfile("text.txt");
+	obj.opentag("text.txt");//CALLING THE REQUIRED FUNCTIONS
+	obj.clostag("text.txt");
+	obj.print();
+	obj.checkcommet("text.txt");
+	system("pause");
+}// ConsoleApplication37.cpp : This file contains the 'main' function. Program execution begins and ends there.
+//
+
+#include "pch.h"
+//#include"stdafx.h"
+#include<iostream>
+#include<fstream>
+#include<sstream>
+using namespace std;
+
+template<class T>
+class Node//STACK WITH LINKED LIST IS IMPLEMENTED IN THIS CODE
+{
+public:
+	T data;
+	int no;
+	Node<T>* next;//NEXT POINTER USED FOR USING NEXT VALUE OR SPACE IN STACK
+	Node()
+	{
+		next = nullptr;
+	}
+};
+template<class T>
+class Stack
+{
+private:
+	Node<T>* top;
+public:
+	Stack()//CONSTRUCTOR.
+	{
+		top = nullptr;
+	}
+
+	bool IsEmpty()//fUNCTION TO CHECK EMPTY STACK
+	{
+		if (top == nullptr)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	bool push(const T& val)//PUSH FUNCTION FOR STACK
+	{
+		Node<T>* temp = new Node<T>();//AUXILIARY POINTER CREATED TO PUSH THE VALUE BY USING IT
+
+		if (top == nullptr)//CHECKING FOR STACK IF IT IS EMPTY
+		{
+			temp->data = val;
+
+			top = temp;
+			return true;
+		}
+		else//DATA ENTERING IN OTHERS SPACES EXCEPT FIRST ONE
+		{
+			temp->data = val;
+
+			temp->next = top;
+
+			top = temp;
+		}
+
+	}
+	T pop()//POP FUNCTION FOR STACK,IT POPS THE VALUE
+	{
+		T a;
+		Node<T>* temp = new Node<T>();
+
+		// EMPTY STACK
+		if (top == NULL) {
+			cout << "Stack Empty" << endl;
+			exit(1);
+		}
+		else {
+			temp = top;
+			top = top->next;
+			temp->next = NULL;
+			a = temp->data;
+			delete temp;
+		}
+		return a;//POPPED VALUE STORED IN A AND RETURNED
+	}
+
+	void print()//PRINT FUNCTION TO DISPLAY ALL VALUES OF STACK
+	{
+		Node<T>* temp = new Node<T>();//AUXILIARY POINTER
+
+		if (top == NULL) {
+			cout << "Stack Empty" << endl;
+			exit(1);
+		}
+		else {
+			temp = top;
+			while (temp != NULL) {
+
+				cout << temp->data << " ";//REPRESENTING DATA OF STACKS
+				temp = temp->next;
+			}
+		}
+
+	}
+	int size()//FUNCTION WITH INT RETURN TYPE TO GET THE SIZE OF STACK
+	{
+		int x = 0;
+		Node<T>* temp = new Node<T>();
+
+		if (top == NULL) {
+			cout << "Stack Empty" << endl;
+			exit(1);
+		}
+		else {
+			temp = top;
+			while (temp != NULL) {
+
+				x++;
+				temp = temp->next;
+			}
+		}
+		return x;
+
+	}
+	~Stack()
+	{
+		delete top;
+	}
+};
+
+class xmldata//CLASS FOR PERFORMING XML OPERATIONS
+{
+private:
+	string tag;
+	Stack<char> inc;
+	Stack<string>inc1;
+	Stack<string>inc2;
+	int line_no;
+	int o, c = 1;
+	bool open_tag;
+
+public:
+	xmldata()//CONSTRCUTOR OF XML CLASS
+	{
+		line_no = 0;
+		open_tag = false;
+		tag = '-';
+	}
+	xmldata(string TAG, int LINE)//PARAMETRIZED CONSTRCTOR OF XML CLASS
+	{
+		tag = TAG;
+		line_no = LINE;
+	}
+	void readdatafromfile(string filename)//FUNCTION WHICH IS USED TO CHECK THE FIRST LINE OF THE XML FILE
+	{
+
+		fstream fin(filename);
+		char special[1];
+		int c1 = 0;
+		int c2 = -1;
+		int c3 = 0;
+		if (fin.is_open())
+		{
+			int i = 0;
+			while (!fin.eof())//AS WE KNOW THE PATTERN OF XML FILE FIRST LINE IT STARTS FROM <? AND ENDS AT ?>
+			{
+				fin >> special[i];
+				if (special[i] == '<')
+				{
+					inc.push(special[i]);
+				}
+				else if (special[i] == '?')
+				{
+					inc.push(special[i]);
+				}
+				else if (special[i] == '>')
+				{
+					inc.push(special[i]);
+					break;
+				}
+				else if (special[i] == '"')
+				{
+					c3++;
+				}
+
+			}
+			if (c3 == 4)//CHECKING THE NO QUOTATION MARKS. THEY SHOULD BE ALWAYS  4 FOR THE FIRST LINE  
+			{//SO CHECKING THEM IF THEY WERE GREATER THEN 2 OR LESS THEN 2 THEN FIRST LINE IS MISMATCHED
+				while (!inc.IsEmpty())
+				{
+					char a = inc.pop();//NOW WHEN IF CONDITION IS TRUE THEN WE POP THE STACK TO CHECK THE SYMBOLS FOR FIRST LINE
+					if (a == '>')
+					{
+						a = inc.pop();
+						if (a == '?')
+						{
+							a = inc.pop();
+							if (a == '?')
+							{
+								a = inc.pop();
+								if (a == '<')
+								{
+									cout << "First line of file is okay" << endl << endl;//IF ALL CONDITIONS MEET THEN IT MEANS FILE IS OKAY
+								}
+							}
+							else {
+								cout << "File not correct" << endl << endl;
+							}
+						}
+						else
+						{
+							cout << "File not correct" << endl << endl;
+						}
+					}
+					else {
+						cout << "File not correct" << endl << endl;
+					}
+				}
+			}
+			else {
+				cout << "QUOTES in PROLOGE are mismatched" << endl << endl;//QUOTATION MARKS ARE NOT MATCHED
+
+			}
+			c3 = 0;
+			while (!fin.eof())
+			{
+				fin >> special[i];
+				if (special[i] == '<')
+				{
+					c1++;//COUNTING NO OF OPENING SYMBOLS IN THE XML FILE
+				}
+				else if (special[i] == '>')
+				{
+					c2++;//COUNTING NO OF CLOSING SYMBOLS IN THE XML FILE
+				}
+				else if (special[i] == '"')
+				{
+					c3++;//COUNTING THE NO OF QUOTATION MARKS IN ALL FILE EXCEPT THE FIRST LINE BCZ FIRST LINE IS ALREADY CHECKED.
+				}
+			}
+			fin.close();
+			if (c1 == c2)//COMPARING THE TAGS NO TO DETECT ERROR
+			{
+				cout << "Yes, They have same no of Opening and closing Tags" << endl << endl;
+			}
+			else
+			{
+				cout << "They Donot have same no of Opening tags and closing tags" << endl << endl;
+			}
+			if (c3 % 2 == 0)//TAKING THE MODE OF TOTAL QUOTATION MARKS WITH 2 BCZ THEY SHOULD BE IN EVEN NO IN CORRECT FILE.
+			{
+				cout << "File has Even no of QUOTATION MARKS which means file is correct" << endl << endl;
+			}
+			else
+			{
+				cout << "File has Odd no of QUOTATION MARKS which means file is not correct" << endl << endl;
+			}
+
+
+		}
+		else
+			cout << "error in file opening\n" << endl << endl;
+	}
+	void opentag(string file)//THIS FUNCTION IS USED TO STORE ALL THE OPENING TAGS OF THE FILE IN A STACK
+	{
+		fstream in(file);//FILE OPENING
+		char s[1];
+		string a;
+		int n = 0, t = 0;
+		if (in.is_open())
+		{
+			int i = 0;
+			while (getline(in, a))//GETLINE IS USED TO PICK THE WHOLE TAG INSTEAD OF PICKING IT INDEX BY INDEX
+			{
+				in >> s[i];
+				if (s[i] == '<')//THIS CHECK IS FOR OPENING TAGS
+				{
+					stringstream ss(a);//BUILTIN LIBRARY STRINGSTREAM IS USED TO STORE A STRING VARIABLE
+					getline(ss, tag, '>');//THIS GET LINE WILL TAKE THE LINE TILL THE CLOSING SYMBOL
+					line_no++;//AS WE TAKE AN OPENING TAG WE INCERMENT THE LINE NO SO THAT LINENO WILL BE CALCULATED TILL END OF FILE
+					stringstream sa(tag);//ANOTHER STRING STREAM IS USED FOR THE LINE PICKED SO THAT WE CAN CHECK FOR ATTRIBUTES
+					getline(sa, tag, ' ');//AS ATTRIBUTES SHOULD NOT BE INCLUDED SO WE CHECK TILL THE FIRST SPACE, WHERE FIRST SPACE OCCURS IT STOPS.
+					if (tag[0] == '/' || tag[0] == '?' || tag[0] == '!')//WE CHECK FOR ALL THESE SYMBOLS IF THEY WERE AT THE STARTING INDEX
+					{//IT MEANS THIS IS NOT A OPENING TAG / REPRESENTS CLOSING TAG ? REPRESENTS PROLOGE ! REPRESENTS COMMENTING
+
+					}
+					else
+					{
+						inc1.push(tag);//THE TAG PICKED IS NOW PUSHED IN STACK
+						o++;//THIS INCREMENT IS TO KEEP THE COUNTER OF OPENING TAGS
+					}
+				}
+			}
+		}
+	}
+
+	void clostag(string file)//FUNCTION WHICH IS USED FOR STROING ALL CLOSING TAGS
+	{
+		fstream in(file);//FILING VARIABLE CREATED
+		char s[1];
+		string a;
+		while (!in.eof())//COMPILE TILL END OF FILE
+		{
+			int i = 0;
+			in >> s[i];
+			if (s[i] == '<')//THIS CHECK IS FOR OPENING TAGS
+			{
+				in >> s[i];
+				if (s[i] == '/')//NOW AFTER OPENING TAG WE CHECK FOR / IF IT IS PRESENT THEN IT IS A CLOSING TAG OTHERWISE IT IS NOT
+				{
+					getline(in, a);
+					stringstream ss(a); // BUILTIN LIBRARY STRINGSTREAM IS USED TO STORE A STRING VARIABLE
+					getline(ss, tag, '>');//THIS GET LINE WILL TAKE THE LINE TILL THE CLOSING SYMBOL
+
+					stringstream sa(tag);//ANOTHER STRING STREAM IS USED FOR THE LINE PICKED SO THAT WE CAN CHECK FOR ATTRIBUTES
+					getline(sa, tag, ' ');//AS ATTRIBUTES SHOULD NOT BE INCLUDED SO WE CHECK TILL THE FIRST SPACE, WHERE FIRST SPACE OCCURS IT STOPS.
+					inc2.push(tag);//THE TAG PICKED IS NOW PUSHED IN STACK
+					c++;//THIS INCREMENT IS TO KEEP THE COUNTER OF OPENING TAGS
+					i++;//THIS COUNTER IS USED TO KEEP THE WHILE LOOP FOR ONLY 1 TAG AT A TIME
+
+				}
+			}
+		}
+	}
+	void print()//PRINT FUNCTION TO SHOW ALL THE OUTPUT
+	{
+		string arr[50];//TWO STATIC ARRAYS ARE USED FOR COMPARING STACKS
+		string arr1[50];
+
+		int A1 = 0;
+		int A2 = 0;
+		int q = 0;
+		int r = 0;
+		int x = inc1.size() + 1;//SIZE OF STACK IS USED
+		while (!inc1.IsEmpty())//FIRST ARRAY IS POPULATED TILL THE STACK IS EMPTY
+		{
+			arr[q] = inc1.pop();//INDEX WISE POPULATION IS DONE
+			q++;
+			A1++;
+		}
+		q--;
+		while (!inc2.IsEmpty())//SECOND ARRAY IS POPULATED TILL THE NEXT STACK IS EMPTY
+		{
+			arr1[r] = inc2.pop();//INDEX WISE POPULATION IS DONE
+			r++;
+			A2++;
+		}
+		int miss = 0;//IT IS USED TO GIVE THE NO OF WRONG TAGS
+		for (int i = 0; i < q; i++)
+		{
+			open_tag = false;//IT IS A PRIVATE MEMBER OF A CLASS
+			for (int j = 0; j < r;)//NESTED FOR IS USED FOR COMPARISION
+			{
+				if (arr[i] == arr1[j])
+				{
+					open_tag = true;//WHEN TAGS IS FOUND OPEN_TAG IS SET TO TRUE MEANS IT IS PRESENT
+					arr1[j] = " ";
+					j = r;
+				}
+				else
+					j++;
+			}
+			if (open_tag == false)//IF TAG IS NOT FOUND
+			{
+				cout << "Mismatch occured on line no : " << x << endl << endl;//IT WILL GIVE THE LINENO ON WHICH THE ERRORED TAG IS PRESENT
+				cout << "Mismatched Tag : " << arr[i] << endl << endl;
+				miss++;
+			}
+			x--;
+		}
+		if (o > c) {//THIS COMPARSION IS TO COMPARE THE NO OF OPENING TAGS AND CLOSING TAGS
+			int p = o - c;
+			cout << x << " Extra Opening tag" << endl;//IF OPEING TAGS ARE MORE IT WILL GIVE THE COUNT FOR THE TAGS THAT ARE MISMATCHED
+		}
+		else if (c > o)
+		{
+			int q = c - o;
+			cout << x << "Extra Closing tag " << endl;//IF OPENING TAGS ARE MORE IT WILL GIVE THE COUNT FOR THE TAGS THAT ARE MISMATCHED
+		}
+		cout << "No of INCORRECT TAGS : " << miss << endl;//IT WILL GIVE THE COUNT FOR INCORRECT TAGS/ MISSMATHCED TAGS
+
+		cout << endl;
+		cout << "Total No of Lines in Code : " << line_no << endl << endl;//IT WILL GIVE THE TOTAL NO OF LINES IN THE CODE
+	}
+	void checkcommet(string file)//THIS FUNCTION IS USED FOR CHECKING THE COMMENTS IN THE XML FILE
+	{
+		fstream in(file);
+		char s[1];
+		string a;
+		while (!in.eof())
+		{
+			int i = 0;
+			in >> s[i];
+			if (s[i] == '<')//THIS ARRANGEMENT IS CHECK AS ACCORDING TO STANDARD SYNTAX OF COMMENTS IN XML FILE
+			{//STANDARD SYNTAX IS <!--...................-->
+				inc.push(s[i]);
+				in >> s[i];
+				if (s[i] == '!')
+				{
+					inc.push(s[i]);
+					in >> s[i];
+				}
+				if (s[i] == '-')
+				{
+					inc.push(s[i]);
+					in >> s[i];
+				}
+				if (s[i] == '>')
+				{
+					inc.push(s[i]);
+					break;
+				}
+			}
+		}
+		while (!inc.IsEmpty())//AGAIN WE DO THE CHECKING OF POOPED ELEMENTS TO SEE IF THE STANDARD SYNTAX OF COMMENTS IS FULFILLED OR NOT
+		{
+			char a = inc.pop();
+			if (a == '>')
+			{
+				a = inc.pop();
+				if (a == '-')
+				{
+					a = inc.pop();
+					if (a == '-')
+					{
+						a = inc.pop();
+						if (a == '-')
+						{
+							a = inc.pop();
+							if (a == '-')
+							{
+								a = inc.pop();
+								if (a == '!')
+								{
+									a = inc.pop();
+									if (a == '<')
+									{
+										cout << "comments are Maintained" << endl;
+									}
+
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+};
+int main()//MAIN FOR THE GIVEN CODE
+{
+	xmldata obj;//OBJ FOR XML CLASS
+	cout << "\t\t\t\t\t\t(:WELCOME TO XML CHECKER :)" << endl << endl;
+	obj.readdatafromfile("text.txt");
+	obj.opentag("text.txt");//CALLING THE REQUIRED FUNCTIONS
+	obj.clostag("text.txt");
+	obj.print();
+	obj.checkcommet("text.txt");
+	system("pause");
+}
