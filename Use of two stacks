@@ -1,0 +1,95 @@
+#include<iostream>
+using namespace std;
+
+class stack
+{
+private:
+	int *arr;
+	int top1,top2;
+	int sizeofarr;
+public:
+	stack(int size)
+	{
+		sizeofarr=size;
+		arr=new int[size];
+		top1=-1;
+		top2=sizeofarr;
+	}
+	void push1(int x)
+	{
+		if(top1<top2-1)
+		{
+			top1++;
+			arr[top1]=x;
+		}
+		else
+		{
+			cout<<"Size is full"<<endl;
+			exit(1);
+		}
+	}
+	void push2(int y)
+	{
+		if(top1<top2-1)
+		{
+			top2--;
+			arr[top2]=y;
+		}
+		else
+		{
+			cout<<"Size is full"<<endl;
+			exit(1);
+		}
+
+	}
+	int pop1()
+	{
+		if(top1>=0)
+		{
+			int data=arr[top1];
+			top1--;
+			return data;
+		}
+		else
+		{ 
+			cout << "Out of size"<<endl; 
+			exit(1); 
+		} 
+	} 
+	int pop2()
+	{
+		if(top2<sizeofarr)
+		{
+			int data=arr[top2];
+			top2++;
+			return data;
+		}
+		else
+		{ 
+			cout << "Out of size"<<endl; 
+			exit(1); 
+		} 
+	} 
+	void print()
+	{
+		for(int i=0;i<sizeofarr;i++)
+		{
+		cout<<arr[i]<<endl;
+		}	
+	}
+};
+
+
+int main()
+{
+	stack st(5);
+	st.push1(2);
+	st.push1(4);
+	st.push2(5);
+	st.push2(7);
+	st.push2(9);
+	cout<<"The element which is poped out from Stack 2 is : "<<st.pop2()<<endl;
+	cout<<"The element which is poped out from Stack 1 is : "<<st.pop1()<<endl;
+	
+	system("pause");
+}
