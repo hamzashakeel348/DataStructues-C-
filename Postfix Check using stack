@@ -1,0 +1,115 @@
+#include<iostream>
+#include<string>
+using namespace std;
+
+template<class T>
+class Stack
+{
+public:
+	T* arr;
+	int top;
+	int max_size;
+public:
+	Stack(int max_size) :top(-1), max_size(max_size)
+	{
+		arr = new T[max_size];
+	}
+	int size() const { return top + 1; }
+	bool underflow() const { return (top == -1); }
+	bool overflow() const { return (top == max_size - 1); }
+	bool Top(T& obj) const
+	{
+		if (underflow()) return false;
+		obj = arr[top];
+		return true;
+	}
+	T pop()
+	{
+		if (!underflow())  top--;
+		else cout << "No element present in the stack" << endl;
+		return arr[top + 1];
+	}
+	bool push(const T& obj)
+	{
+		if (!overflow())
+		{
+			arr[++top] = obj;
+			return true;
+		}
+		cout << "Stack full" << endl;
+		return false;
+	}
+	~Stack()
+	{
+		delete arr;
+	}
+
+	void print() const
+	{
+		for (int i = 0; i <= top; i++)
+			cout << (char)arr[i] << (int)arr[i] << "  ";
+		cout << endl;
+	}
+};
+bool IsOperation(char op)
+{
+	return (op == '+' || op == '-' || op == '*' || op == '/' || op == '%');
+}
+void Post_fix(string exp)
+{
+	static int i = -1;
+	Stack<int> a(exp.length());
+	Stack<int> b(exp.length());
+	//Pushing string expression into stack A
+	for (int i = exp.length() - 1; i >= 0; i--)
+		a.push((int)exp[i]);
+
+	int q;
+	while (a.top > 1)
+	{
+		do
+		{
+			b.push(a.pop());
+			b.Top(q);
+		} while (!IsOperation(q) && !a.underflow());
+		if (IsOperation(q))
+		{
+			a.push(i);
+			char opn = b.pop();
+			int opd1 = b.pop();
+			int opd2 = b.pop();
+
+			cout << "LD ";
+			if (opd2 < 0) cout << "AUX" << -1 * opd2;
+			else cout << (char)opd2;
+			cout << endl;
+
+			if (opn == '+') cout << "AD ";
+			else
+				if (opn == '-') cout << "SB ";
+				else
+					if (opn == '*') cout << "ML ";
+					else
+						if (opn == '/') cout << "DV ";
+			if (opd1 < 0) cout << "AUX" << -1 * opd1;
+			else cout << (char)opd1;
+			cout << endl;
+
+
+			cout << "ST AUX" << -1 * i << endl;
+
+			i--;
+		}
+		while (!b.underflow())
+			a.push(b.pop());
+	}
+}
+
+int main()
+{
+	Post_fix("ABCDE+-*/");
+
+	cout << endl;
+	system("pause");
+	return 0;
+}
