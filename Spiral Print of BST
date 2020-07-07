@@ -1,0 +1,165 @@
+#include<iostream>
+
+using namespace std;
+
+
+#define size 50
+template <class t>
+class stack
+{
+	int sizeofstack;
+	int top;
+	t a[size];
+public:
+	stack()
+	{
+		top = -1;
+		sizeofstack = 0;
+	}
+	bool push(t x)
+	{
+		if (top == size)
+		{
+			cout << "stack is full" << endl;
+			return false;
+		}
+		else
+		{
+			top++;
+			a[top] = x;
+			sizeofstack++;
+		}
+	}
+	t pop()
+	{
+		if (top == -1)
+		{
+			cout << "stack is empty" << endl;
+
+		}
+		else
+		{
+			t value = 0;
+			value = a[top];
+			top--;
+			sizeofstack--;
+			return value;
+		}
+	}
+
+	bool empty()
+	{
+		if (top == -1)
+		{
+			return true;
+		}
+		return false;
+	}
+
+};
+
+struct TNode
+{
+	int key;
+	int value;
+	TNode *left,*right;
+public:
+	TNode(){}
+	TNode(int a)
+	{
+		left=right=nullptr;
+		value=a;
+	}
+};
+
+class BST{
+	TNode * root;
+public:
+	BST(){
+		root=nullptr;
+	}
+
+	void preorder()
+	{
+		printPreorder(root);
+	}
+
+	void printPreorder(TNode* node) 
+	{ 
+
+		if (node == NULL) 
+		{
+			return; 
+		}
+		cout << node->value << " "; 
+		printPreorder(node->left);  
+		printPreorder(node->right); 
+
+	}  
+	
+
+	bool insertIteratively(int d)
+	{
+		TNode* ptr = new TNode(d);
+		TNode* temp = root;
+		TNode* aux = nullptr;
+		if (root != nullptr)
+		{
+			while (temp != nullptr)
+			{
+				aux = temp;
+				if (d < temp->value)
+					temp = temp->left;
+				else if (d == temp->value)
+				{
+					cout << "Data is already existing" << endl;
+					return false;
+				}
+				else
+					temp = temp->right;
+			}
+			if (d < aux->value)
+				aux->left = ptr;
+			else
+				aux->right = ptr;
+			return true;
+		}
+		else
+		{
+			root = ptr;
+			return true;
+
+		}
+	}
+
+	
+	void spiralPrint()
+	{
+		stack<TNode*>s1;
+		stack<TNode*>s2;
+		TNode*temp = root;
+		s1.push(root);
+		while (!s1.empty() || !s2.empty())
+		{
+			while (!s1.empty())
+			{
+				temp = s1.pop();
+				cout << temp->value<<" ";
+				if (temp->right != nullptr)
+					s2.push(temp->right);
+				if (temp->left != nullptr)
+					s2.push(temp->left);
+			}
+			while (!s2.empty())
+			{
+				temp = s2.pop();
+				cout << temp->value<<" ";
+				if (temp->left != nullptr)
+					s1.push(temp->left);
+				if (temp->right != nullptr)
+					s1.push(temp->right);
+			}
+		}
+
+	}
+};
