@@ -1,0 +1,193 @@
+#include <iostream>
+
+using namespace std;
+
+struct TNode
+{
+	int key;
+	int value;
+	TNode *left,*right;
+};
+
+class BST{
+	TNode * root;
+public:
+	BST(){
+	 root=nullptr;
+	}
+	void insert(int ke){
+		insertR(ke,root);
+	}
+	bool insertR(int ke,TNode * & r){
+		if(r == nullptr){
+			TNode * temp = new TNode;
+			temp->value=ke;
+			temp->left=temp->right=nullptr;
+			r=temp;
+			return true;
+		}
+			if(ke < r->value){
+				insertR(ke,r->left);
+			}
+			else{
+				insertR(ke,r->right);
+}
+ return false;
+	}
+	 BST(BST  & obj){
+		 root=nullptr;
+		copy(obj.root);
+	}
+	void copy(TNode * temp){
+		if(temp){
+			copy(temp->left);
+			insert(temp->key);
+			copy(temp->right);
+		}
+	}
+
+	void inorderPrintKeys(){
+	    PrintKeys(root);
+	}
+
+	void PrintKeys(TNode * temp){
+	  if(temp){
+		  PrintKeys(temp->left);
+			cout<<temp->value<<" ";
+			PrintKeys(temp->right);
+		}
+	}
+
+	TNode* search(int ke){
+	 return search(ke,root);
+	}
+
+	TNode* search(int ke,TNode* & temp){
+		if(temp==nullptr){
+		     return nullptr;
+		}
+		if(ke==temp->key)
+			return temp;
+		if(ke<temp->key)
+			return search(ke,temp->left);
+		else{
+			return search(ke,temp->right);
+	  }
+	}
+	int length() const
+	{
+		return length1(root);
+	}
+	int length1(TNode * root) const
+	{
+		if (root)
+		{
+			return length1(root->left) + length1(root->right) + 1;
+		}
+		else
+			return 0;
+	}
+	
+	
+	bool delleteroot(TNode *&root, int key)
+	{
+		if (root)
+		{
+			if (root->value > key)
+			{
+				return delleteroot(root->left, key);
+			}
+			else if (root->value < key)
+			{
+				return delleteroot(root->right, key);
+			}
+			else
+				return deletenode(root);
+		}
+		else 
+			return false;
+	}
+	bool deletekey(int key)
+	{
+		return delleteroot(root, key);
+	}
+	 bool deletenode(TNode *& root)
+	{
+		 if (root->left == nullptr && root->right == nullptr)
+		 {
+			 TNode * temp = root;
+			 root = nullptr;
+			 delete temp;
+			 return true;
+		 }
+		 else if (root->left == nullptr)
+		 {
+			 TNode * temp = root;
+			 root = root->right;
+			 delete temp;
+			 return true;
+		 }
+		 else if (root->right == nullptr)
+		 {
+			 TNode * temp = root;
+			 root = root->left;
+			 delete temp;
+			 return true;
+		 }
+		 else
+		 {
+			 root->value = getpred(root->left);
+			 return delleteroot(root->left, root->value);
+
+		 }
+
+	}
+
+	 int getpred(TNode * ptr)
+	{
+		int value1 = 0;
+		while (ptr != nullptr)
+		{
+			if (ptr->value > value1)
+			{
+				value1 = ptr->value;
+				root = ptr->right;
+			}
+		}
+		return value1;
+
+	}
+	~BST(){
+		destructor(root);
+	}
+	void destructor(TNode * & temp){
+		if(temp){
+			destructor(temp->left);
+			destructor(temp->right);
+			delete temp;
+		}
+	}
+};
+
+int main(){
+
+	BST obj;
+	obj.insert(2);
+	obj.insert(1);
+	obj.insert(3);
+	obj.insert(1);
+	obj.insert(5);
+	obj.insert(4);
+	obj.insert(9);
+	obj.insert(8);
+	obj.inorderPrintKeys();
+	cout<<endl;
+	cout<<obj.length();
+	cout<<endl;
+	obj.deletekey(9);
+	obj.inorderPrintKeys();
+	cout<<endl;
+	cout<<obj.length()<<endl;
+	system("pause");
+return 0;
+}
