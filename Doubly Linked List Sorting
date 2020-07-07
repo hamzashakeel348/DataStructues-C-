@@ -1,0 +1,113 @@
+#include<iostream>
+
+using namespace std;
+
+class node
+{
+public:
+	node *next;
+	node *prev;
+	int data;
+	node()
+	{
+		data=0;
+		next=nullptr;
+		prev=nullptr;
+	}
+
+
+};
+
+
+class dll
+{
+private:
+	node *head;
+public:
+	dll()
+	{
+		head =nullptr;
+	}
+	void insertatstart(int element)
+	{
+		node *p=new node();
+		p->data=element;
+		p->next=nullptr;
+		p->prev=nullptr;
+		if(head==nullptr)
+		{
+			head=p;
+		}
+		else
+		{
+			p->next=head;
+			head->prev=p;
+			head=p;
+		}
+	}
+	void print()
+	{
+		node *p=head;
+		while(p!=nullptr)
+		{
+			cout<<p->data<<" ";
+			p=p->next;
+		}
+	}
+	void sort()
+	{
+		node*p=new node();
+		node*q=new node();
+		node*r=new node();
+		int c=0;
+		p=head;
+		q=p->next;
+		r=head;
+		while(r!=nullptr)
+		{
+			c++;
+			r=r->next;
+		}
+		int x=0,y=0;
+		while(x!=c)
+		{
+			p=head;
+			q=p->next;
+			while(q!=nullptr)
+			{
+				if(p->data<q->data)
+				{
+					p=p->next;
+					q=q->next;
+				}
+				else if(p->data>q->data)
+				{
+					y=p->data;
+					p->data=q->data;
+					q->data=y;
+					p=p->next;
+					q=q->next;
+				}
+			}
+			x++;
+		}
+	}
+};
+
+int main()
+{
+	dll obj;
+	obj.insertatstart(1);
+	obj.insertatstart(4);
+	obj.insertatstart(6);
+	obj.insertatstart(10);
+	obj.insertatstart(12);
+	obj.insertatstart(7);
+	obj.insertatstart(5);
+	obj.insertatstart(2);
+	obj.print();
+	cout<<endl;
+	obj.sort();
+	obj.print();
+	system("pause");
+}
