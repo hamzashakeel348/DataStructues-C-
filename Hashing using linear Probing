@@ -1,0 +1,123 @@
+#include<iostream>
+#include<Windows.h>
+using namespace std;
+
+template<class DT>
+class Hashtable
+{
+public:
+	Hashtable(int s);
+	bool store(DT key);
+	bool search(DT key);
+	void print();
+private:
+	int size;
+	DT* arr;
+};
+
+template<class DT>
+Hashtable<DT>::Hashtable(int s)
+{
+	size=s;
+	arr=new DT [size];
+	for(int i=0;i<size;i++)
+		arr[i]=NULL;
+}
+
+template<class DT>
+bool Hashtable<DT>::store(DT key)
+{
+	int j;
+	j=key%size;
+	if(arr[j]==NULL)
+		arr[j]=key;
+
+	else
+	{
+		while(arr[j]!=NULL)
+		{
+			j++;
+			if(j>size)
+			{
+				break;
+				return false;
+			}
+		}
+		if(j<size)
+		{
+			arr[j]=key;
+			return true;
+		}
+	}
+}
+
+template<class DT>
+bool Hashtable<DT>::search(DT key)
+{
+	bool success=true;
+	int location = key%size;
+	int j;
+	for( j=location; arr[j]!=key; )
+	{
+		j=(j+1)%size;
+		if(j==location || arr[j]==-1)
+		{
+			success=false;//doesn't exist
+			break;
+		}
+	}
+	if(success)
+	{
+		cout<<"found at "<<j<<endl;
+	}
+	return success;
+}
+
+template<class DT>
+void Hashtable<DT>::print()
+{
+	for(int i=0;i<size;i++)
+	{
+		cout<<arr[i]<<" ";
+	}
+}
+
+int main()
+{
+	int num_of_identifiers;
+	cout<<"Enter maximum number of keys that need to be stored in the hashtable: ";
+	cin>>num_of_identifiers;
+
+	int size_hashtable;
+	cout<<"Enter size of hashtable needed to store these many identifiers (hint: use prime number): ";
+	cin>>size_hashtable;
+
+	//create a hashtable of this size 
+	Hashtable<int>* ht=new Hashtable<int>(size_hashtable);
+	
+	for (int i=0; i<num_of_identifiers; i++)
+	{
+		int key=rand()%1000;
+		bool was_stored = ht->store(key);
+		if(!was_stored)
+			cout<<key<<" could not be stored as it already exists or table is full"<<endl;
+	}
+	ht->print();
+
+	int find_key;
+	cout<<"Enter the key to search for "<<endl;
+	cin>>find_key;
+
+	DWORD start, end;//measure time
+	start= GetTickCount();
+	bool found= ht->search(find_key);
+	end= GetTickCount();
+	double cpu_time_used = end - start;
+	if(found) 
+		cout<<"it was found in "<<cpu_time_used<<" milliseconds"<<endl;
+	else 
+		cout<<"not found in "<<cpu_time_used<<" milliseconds"<<endl;
+	system("pause");
+	return 0;
+}
+
