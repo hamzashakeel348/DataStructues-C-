@@ -1,0 +1,237 @@
+#include<iostream>
+#include<assert.h>
+#include<fstream>
+#include<string>
+using namespace std;
+
+template <class v>
+struct HashItem
+{
+	int key;
+	v value;
+	short status;
+public:
+	HashItem()
+	{
+		key=0;
+		status=0;
+	}
+	HashItem(int k, v v) 
+	{ 
+		key = k; 
+		value = v; 
+
+	} 
+};
+
+template <class v>
+class HashMap
+{
+public:
+	HashItem<v>* hashArray;
+	int capacity;
+	int currentElements;
+
+	HashMap() 
+	{ 
+		capacity = 10; 
+		currentElements=0; 
+		hashArray = new HashItem<v>[capacity]; 
+	} 
+	HashMap(int const _capacity)
+	{
+		assert(capacity < 1);
+		capacity = _capacity;
+		currentElements = 0;
+		hashArray = new HashItem<v> [capacity] ();
+	}
+	void doubleCapacity()
+	{
+		int x = capacity;
+		capacity = capacity*2;
+		HashItem<v>* newHashArray = new HashItem<v> [capacity] ();
+
+		for(int i=0; hashArray[i].status!=0 && i<x; i++)
+			insertnode(hashArray[i].key, hashArray[i].value);
+
+		this->hashArray=newHashArray;
+		delete [] newHashArray;
+	}
+	virtual int getNextCandidateIndex(int key, int i)
+	{
+		int index = (key+i)%capacity;
+		if(hashArray[index].status==0 || hashArray[index].status == 1)
+			return index;
+		return getNextCandidateIndex(key, ++i);
+	}
+
+	void insertnode(int const k, v const val)
+	{
+		int loadfac=currentElements/capacity;
+		if(loadfac>=0.75)
+		{
+			doubleCapacity();
+		}
+		int x=k%capacity;
+		if(hashArray[x].status == 0 || hashArray[x].status == 1)
+		{
+			hashArray[x].status=2;
+			hashArray[x].key=k;
+			hashArray[x].value=val;
+			currentElements=currentElements+1;
+		}
+		else if(hashArray[x].status==2)
+		{
+			int p=getNextCandidateIndex(k,1);
+			hashArray[x].key=k;
+			hashArray[x].value=val;
+			currentElements=currentElements+1;
+		}
+
+	}
+
+
+	bool deleteKey(int const key) const
+	{
+		cout<<"Key to be deleted : "<<key<<endl;
+		for(int i=0;i<capacity; i++)
+			if(hashArray[i].key == key)
+			{
+				hashArray[i].status = 1;//key deleted
+				return true;
+			}
+
+			cout<<"key not found.\n";
+			return false;
+	}
+
+	v* get(int const key) const
+	{
+		for(int i=0;i<capacity; i++)
+			if(hashArray[i].key == key)
+			{
+				cout<<"key found"<<endl;
+				cout<<"Value on given key : "<<endl;
+				return (&hashArray[i].value);
+			}
+
+			cout<<"key not found.\n";
+			return nullptr;
+	}
+	void print(int Key, v Value)
+	{
+		cout<<"key:"<<Key<<" value:"<<Value<<endl;
+	}
+	int primenumber(int K)
+	{
+		int x=K+10;
+		for (int i = K; i < x; i++)
+			for (int j = 2; j < i; j++)
+			{
+				if (i % j == 0)
+					break;
+				else if (i == j + 1)
+					return i;
+			}
+	}
+	~HashMap()
+	{
+		if(hashArray!=nullptr)
+			hashArray=nullptr;
+		delete hashArray;
+	}
+};
+
+template<class v>
+class Qhashmap:public HashMap<v>
+{
+public:
+	int getNextCandidateIndex(int key, int i)
+	{
+		int x = i * i;
+		int index = (key + x) % this->capacity;
+		if (this->hashArray[index].status == 0 || this->hashArray[index].status == 1)
+		{
+			return index;
+		}
+		return getNextCandidateIndex(key, ++i);
+	}
+};
+template <class v>
+class Dhashmap:public HashMap<v>
+{
+public:
+	int getNextCandidateIndex(int key, int i)
+	{
+		int p = this->primenumber(key);
+		int first = key % this->capacity;
+		int second = (p - (key % p));
+		int index = (first + i * second) % this->capacity;
+		if (this->hashArray[index].status == 0 || this->hashArray[index].status == 1)
+		{
+			return index;
+		}
+		return getNextCandidateIndex(key, ++i);
+	}
+};
+
+void populateHash(string filename, HashMap<string>*& hash)
+{
+
+	char user[15];
+	int k;
+	string na;
+	int size;
+	fstream finn(filename);
+	if (finn.is_open())
+	{
+		finn >> size;
+		hash = new HashMap<string>(size);
+		finn.ignore();
+		while (!finn.eof())
+		{
+			finn >> k;
+			finn.ignore();
+			finn.getline(user, 20);
+			na = user;
+			hash->insertnode(k, na);
+			hash->print(k,na);
+		}
+		finn.close();
+	}
+	else
+		cout << "error!file not fount\n";
+
+}
+
+int main()
+{
+	HashMap<string>* map;
+	map = new HashMap<string>;
+	populateHash("studentss.txt", map);
+	cout << *map->get(153)<<endl;
+	map->deleteKey(153);
+	if(map->get(153) == nullptr)
+	{
+		delete map;
+	}
+	map = new Qhashmap<string>;
+	populateHash("studentss.txt", map);
+	cout << *map->get(98)<<endl;
+	map->deleteKey(98);
+	if(map->get(98) == nullptr);
+	{
+		delete map;
+	}
+	map = new Dhashmap<string>;
+	populateHash("studentss.txt", map);
+	cout << *map->get(101)<<endl;
+	map->deleteKey(101);
+	if(map->get(101) == nullptr);
+	{
+		delete map;
+	}
+	system("pause");
+	return 0;
+
+}
