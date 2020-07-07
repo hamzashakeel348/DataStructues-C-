@@ -1,343 +1,198 @@
 #include<iostream>
 using namespace std;
-
-template <typename T>
+template<class t>
 class Node
 {
-   public: 
-	     Node(T element)
-		 {
-			 data=element;
-			 next=NULL;
-		 }
-		 	 
-	     T data;
-		 Node *next ;
-};
-
-template <typename T>
-class List
+public:
+t data;
+Node *next;
+Node()
 {
-   public: 
-	     List()
-		 {
-			 first=NULL;
-		 }
-
-		 void Insert(Node<T>* pBefore, Node<T>* pNew)
-		 {
-			 if(first==NULL)
-			 {
-				 first=pNew;
-			 }
-
-			 else if(first!=NULL && pBefore==0)
-			 {
-				 pNew->next=first;
-				 first=pNew;
-			 }
-			 
-			 else if(first!=NULL && pBefore->next==NULL)
-			 {
-				 pBefore->next=pNew;
-			 }
-
-			 else
-			 {
-				 pNew->next=pBefore-> next;
-				 pBefore->next=pNew;
-			 }
-		 }
-
-		 void Delete(Node<T>* pToBeDeleted)
-		 {
-			 Node<T> *temp=first;
-			 Node<T> * prev=NULL;
-
-			 if(first==pToBeDeleted)
-			 {
-				 first=temp->next;
-				 delete temp;
-			 }
-
-			 else
-			 {
-				  while(temp!=pToBeDeleted)
-				  {
-						prev=temp;
-						temp=temp->next;
-				  }
-
-			 prev->next=temp->next;
-			 delete temp;
-			 }
-			
-		 }
-
-		 void printList()
-		 {
-			 for( Node<T> *temp=first; temp!=NULL;  temp=temp->next)
-			 {
-				 cout<<temp->data<<"  ";
-			 }	cout<<endl;
-		 }
-
-		void Sorted_Insert(T d)
-		{
-			Node<T> *temp=first;
-			Node<T> *prev=NULL;
-			Node<T> *n1=new Node<T>(d);
-
-			if((first->data)>= d)
-			{
-				Insert(0, n1);
-			}
-
-			else
-			{	
-				while(temp->data <=d )
-				{
-					prev=temp;
-				    temp=temp->next;
-				
-					if(temp==NULL)   //when temp reaches last node then if temps data store a null address mea
-					{
-						Insert(prev, n1);						
-						break;
-					}
-
-				    if(temp->data >=d )
-					{
-						Insert(prev, n1);
-						break;
-					}
-				
-				}
-				
-				
-			}
-			
-		}
-
-		void Reverse()
-		{
-			Node<T> * temp, * temp1, *prev;
-			prev=NULL;
-			temp=first;
-			temp1=NULL;
-
-			while(temp!=NULL)
-			{
-				temp1=temp->next;
-				temp->next=prev;
-				prev=temp;
-				temp=temp1;
-			}
-			first=prev;
-		}
-
-		void deleteSecondLastNode()
-		{
-			Node <T> *temp=first;
-
-			while(temp->next->next!=NULL)
-			{
-				temp=temp->next;
-			}
-			Delete(temp);
-		}
-
-
-		void deleteSecondNode()
-		{
-			Node <T> *temp=first;
-
-			temp=temp->next;
-			Delete(temp);
-		}
-
-		void reversePrint()
-		{
-			Reverse();
-			printList();
-			Reverse();
-		}
-
-		void rotateCounterClockWise(int pos)
-		{
-			Node<T> *temp=first;
-			Node<T> *pivot=first;
-			for( int pos1=pos; pos>1; pos--)
-			{
-				pivot=pivot->next;
-			}
-
-			while(temp->next!=NULL)
-			{
-				temp=temp->next;
-			}
-			temp->next=first;
-			first=pivot->next;
-			pivot->next=NULL;
-	
-		}
-
-		void swapNode(Node<T> *n1, Node<T> *n2)
-		{
-			Node<T> *temp=first;
-			while(temp!=NULL)
-			{
-				if(temp==n1)
-				{
-					break;
-				}
-		
-				if(temp==n2)
-				{
-					n2=n1;
-					n1=temp;
-					break;
-				}
-				temp=temp->next;
-			}
-		
-			 if(n1==first && n1->next==n2)  //first and second
-			{
-				n1->next=n2->next;
-				n2->next=n1;
-				first=n2;
-			}
-
-			else if(n1->next==n2 && n2->next==NULL) //second last and last
-			{
-				Node<T> * temp=first;
-				while(temp->next != n1)
-				{
-					temp=temp->next;
-				}
-
-				n1->next=NULL;
-				n2->next=n1;
-				temp->next=n2;
-			}
-
-			else if(n2->next==NULL && n1->next!=n2 && n1!=first) //last with all except with first and second last
-			{
-				Node<T> * temp1=first;
-				while(temp1->next!= n2)
-				{
-					temp1=temp1->next;
-				}
-
-				Node<T> * temp=first;
-				while(temp->next != n1)
-				{
-					temp=temp->next;
-				}
-
-				n2->next=n1->next;
-				n1->next=NULL;
-				temp1->next=n1;
-				temp->next=n2;
-			}
-
-			else if(n1!=first && n2->next!=NULL && n1->next!=n2) // middle except corresponding
-			{
-				Node<T> * temp1=first;
-				while(temp1!= n2->next)
-				{
-					temp1=temp1->next;
-				}
-
-				Node<T> * temp=first;
-				while(temp->next != n2)
-				{
-					temp=temp->next;
-				}
-
-				Node<T> * temp2=first;
-				while(temp2->next != n1)
-				{
-					temp2=temp2->next;
-				}
-
-				n2->next=n1->next;
-				n1->next=temp1;
-				temp->next=n1;
-				temp2->next=n2;
-			}
-
-			else if(n1->next==n2 && n1!=first  && n2->next!=NULL)        //middle corresponding
-			{
-				Node<T> * temp2=first;
-				while(temp2->next != n1)
-				{
-					temp2=temp2->next;
-				}
-
-				n1->next=n2->next;
-				n2->next=n1;
-				temp2->next=n2;
-			}
-
-			else if(n1==first && n1->next!=n2) //first with all except second (also first and last)
-			{
-				Node<T> * temp1=first;
-				while(temp1!= n2->next)
-				{
-					temp1=temp1->next;
-				}
-
-				Node<T> * temp=first;
-				while(temp->next != n2)
-				{
-					temp=temp->next;
-				}
-
-				n2->next=n1->next;
-				n1->next=temp1;
-				temp->next=n1;
-				first=n2;
-			}
-			
-		}
-		Node<T>*  getfirst()
-		{
-			return first;
-		}
-		void autoInsert(T d, Node<T> * &temp)
-		{
-			Node<T> * n=new Node<T>(d);
-			
-				Insert(temp,n);
-				temp=n;
-		}
-
-private: 
-	Node<T> *first ;
-		
-};
-
-template <class T>
-void LinkedListMerge(List <T>*& l1, List<T> *& l2, List<T>* & l3)
+next=nullptr;
+}
+void setdata(t a)
 {
-	Node<T> *temp3=l3->getfirst();
-	Node<T> *temp2=l2->getfirst();
-	Node<T> *temp1=l1->getfirst();
-	
-	while(temp1!=NULL)
-	{
-		if(temp2!=NULL)
-		{
-			l3->autoInsert(temp2->data, temp3); //copying l2 into lnew;
-			temp2=temp2->next;
-		}
-		if(temp1!=NULL && temp2==NULL)
-		{
-			l3->Sorted_Insert(temp1->data);
-			temp1=temp1->next;
-		}
-	}
+data=a;
+}
+void setnext(Node<t> *a)
+{
+next=a;
+}
+
+
+};
+template<class t>
+class linkedlist
+{
+protected:
+Node<t> *head;
+
+public:
+
+linkedlist()
+{
+head = nullptr;
+}
+void InsertAtStart(t const element)
+{
+
+if(head ==nullptr)
+{
+Node<t> *p=new Node<t>();
+p->setdata(element);
+p->setnext(nullptr);
+head=p;
+}
+else
+{
+Node<t> *temp= new Node<t>();
+temp->setdata(element);
+temp->setnext(head);
+head=temp;
+}
+}
+void insertAtEnd(t const element)
+{
+Node<t> *temp=new Node<t>();
+temp->setdata(element);
+temp->setnext(nullptr);
+Node<t> *p=head;
+while(p->next!=nullptr)
+{
+p=p->next;
+}
+p->next=temp;
+}
+void print() const
+{
+Node<t> *p=head;
+
+while(p!=nullptr)
+{
+cout<<p->data<<" ";
+p=p->next;
+}
+}
+bool search(t const& element) const
+{
+bool istrue=false;
+Node<t> *a=head;
+while(a!=nullptr)
+{
+if (a->data==element)
+{
+istrue=true;
+cout<<endl;
+cout<<"Found"<<endl;
+return istrue;
+}
+a=a->next;
+}
+/*if(istrue)
+{
+cout<<"Found"<<endl;
+}
+else
+{
+cout<<"Not found"<<endl;
+}*/
+}
+bool isEmpty() const
+{
+if(head==nullptr)
+{
+cout<<"List is empty"<<endl;
+}
+}
+bool insertBefore(t const v1, t const v2) const
+{
+bool dec=false;
+Node<t> *a=head;
+Node<t>*temp;
+if(a!=nullptr)
+{
+while(a->next!=nullptr && a->data!=v2)
+{
+temp=a;
+a=a->next;
+}
+Node<t>* p1=new Node<t> ();
+p1->data=v1;
+temp->next=p1;
+p1->next=a;
+}
+return dec;
+}
+
+
+
+void deleteAll(t value)
+{
+Node<t> *p=head;
+Node<t> *q=new Node<t>();
+
+
+
+while (p!=nullptr && p->data == value)
+{
+prev = current;
+p = p->next;
+head = p;
+delete prev;
+}
+
+
+
+while (p)
+{
+if (p->data == value)
+{
+prev->next = p->next;
+delete p;
+p = prev->next;
+}
+prev = p;
+p = p->next;
+}
+
+
 
 }
+~linkedlist()
+{
+Node<t>*temp=head;
+while(head!=nullptr)
+{
+temp=head->next;
+delete head;
+head=temp;
+head=nullptr;
+}
+}
+void DeleteAtStart()
+{
+Node<t>*q=new Node<t>();
+q=head;
+head=q->next;
+q->next=nullptr;
+}
+
+void reverselist()
+{
+
+Node<t>*current=new Node<t>();
+current= head;
+Node<t> *prev = nullptr;
+Node<t>*next = nullptr;
+
+while (current != nullptr) {
+
+next = current->next;
+current->next = prev;
+prev = current;
+current = next;
+}
+head = prev;
+}
+};
 
