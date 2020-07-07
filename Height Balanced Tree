@@ -1,0 +1,276 @@
+#include <iostream>
+
+using namespace std;
+
+class Node
+{
+public:
+	int data;
+	Node* next;
+
+	Node()
+	{
+		data = 0;
+		next = nullptr;
+	}
+};
+class linked
+{
+private:
+	Node* head;
+	Node* tail;
+public:
+	linked()
+	{
+		head = nullptr;
+	}
+	void InsertAtStart(int element)
+	{
+		Node* p = new Node();
+		p->data = element;
+		p->next = nullptr;
+		if (head == nullptr)
+		{
+			head = p;
+		}
+		else
+		{
+			Node* temp = new Node();
+			temp->data = element;
+			temp->next = head;
+			head = temp;
+		}
+	}
+	Node* gethead()
+	{
+		return head;
+	}
+	void print()
+	{
+		Node* temp = new Node();
+		temp = head;
+
+		while (temp != nullptr)
+		{
+			cout << temp->data << " ";
+			temp = temp->next;
+		}
+	}
+
+	void sort()
+	{
+		Node* p = new Node();
+		Node* q = new Node();
+		Node* r = new Node();
+		int c = 0;
+		p = head;
+		q = p->next;
+		r = head;
+		while (r != nullptr)
+		{
+			c++;
+			r = r->next;
+		}
+		int x = 0, y = 0;
+		while (x != c)
+		{
+			p = head;
+			q = p->next;
+			while (q != nullptr)
+			{
+				if (p->data < q->data)
+				{
+					p = p->next;
+					q = q->next;
+				}
+				else if (p->data > q->data)
+				{
+					y = p->data;
+					p->data = q->data;
+					q->data = y;
+					p = p->next;
+					q = q->next;
+				}
+			}
+			x++;
+		}
+	}
+	int findmiddle()
+	{
+		Node* r = new Node();
+		int c = 0;
+		r = head;
+		while (r != nullptr)
+		{
+			c++;
+			r = r->next;
+		}
+		if (c % 2 == 0)
+		{
+			c /= 2;
+			Node* x = head;
+			while (c != 0)
+			{
+				x = x->next;
+				c--;
+			}
+			c = x->data;
+		}
+		else
+		{
+			c /= 2;
+			Node* x = head;
+			while (c != 0)
+			{
+				x = x->next;
+				c--;
+			}
+			c = x->data;
+		}
+		return c;
+
+	}
+
+};
+
+
+struct TNode
+{
+	int key;
+	int value;
+	TNode* left, * right;
+public:
+	TNode() {}
+	TNode(int a)
+	{
+		left = right = nullptr;
+		value = a;
+	}
+};
+
+class BST {
+	TNode* root;
+	linked a;
+public:
+	BST() 
+	{
+		root = nullptr;
+	}
+
+	void preorder()
+	{
+		printPreorder(root);
+	}
+
+	void printPreorder(TNode* node)
+	{
+
+		if (node == NULL)
+		{
+			return;
+		}
+		cout << node->value << " ";
+		printPreorder(node->left);
+		printPreorder(node->right);
+
+	}
+	
+	void linkedlist()
+	{
+
+		a.InsertAtStart(65);
+		a.InsertAtStart(45);
+		a.InsertAtStart(26);
+
+		a.InsertAtStart(67);
+		a.InsertAtStart(25);
+		a.sort();
+		cout<<"Sorted linked list"<<endl;
+		a.print();
+		Node* p;
+		p = a.gethead();
+		inserttree(p);
+	}
+
+
+	bool insertIteratively(int d)
+	{
+		TNode* temp = root;
+		TNode* ptr = nullptr;
+		int x = a.findmiddle();
+		TNode* t = new TNode;
+		t->value = x;
+		if (temp == nullptr)
+		{
+			temp = t;
+			root = temp;
+			temp->left = nullptr;
+			temp->right = nullptr;
+		}
+		
+		TNode* p = new TNode;
+		p->value = d;
+		if (temp == nullptr)
+		{
+			return true;
+		}
+		else
+		{
+
+			while (temp != nullptr)
+			{
+				ptr = temp;
+				if (d < temp->value)
+					temp = temp->left;
+				else if (d == temp->value)
+				{
+					return false;
+				}
+				else
+					temp = temp->right;
+			}
+		}
+		if (d < ptr->value)
+		{
+			ptr->left = p;
+			p->left = nullptr;
+			p->right = nullptr;
+		}
+		else
+		{
+			ptr->right = p;
+			p->left = nullptr;
+			p->right = nullptr;
+
+		}
+
+		return true;
+	}
+	void inserttree(Node*p)
+	{
+
+		if(p!=NULL)
+		{
+			insertIteratively(p->data);
+			p = p->next;
+			inserttree(p);
+		}
+		else if (p==NULL)
+		{
+			return ;
+		}
+	}
+
+	};
+
+
+
+	int main()
+	{
+		BST obj;
+		obj.linkedlist();
+		cout<<endl;
+		cout<<"Pre order printing"<<endl;
+		obj.preorder();
+		system("pause");
+	}
