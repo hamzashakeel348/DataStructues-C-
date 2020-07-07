@@ -1,0 +1,160 @@
+#include<iostream>
+#include<string>
+using namespace std;
+
+class car;
+template<class t>
+class parking
+{
+	friend class car;
+	int top;
+	t *a;
+	int size;
+public:
+	parking()
+	{
+		size=10;
+		top = -1;
+		a=new t[size];
+
+	}
+	bool push(t x)
+	{
+		if (top == size)
+		{
+			cout << "stack is full" << endl;
+			return false;
+		}
+		else
+		{
+			top++;
+			a[top] = x;
+			//cout << x << " is pushed in stack" << endl;
+			return true;
+		}
+	}
+	t pop()
+	{
+		if (top == -1)
+		{
+			cout << "stack is empty" << endl;
+
+		}
+		else
+		{
+			int x = 0;
+			t value = a[top];
+			top--;
+			return value;
+		}
+	}
+	int peek()
+	{
+		if (top == -1)
+		{
+			cout << "Stack Empty!!" << endl;
+		}
+		else
+		{
+			cout << "Data on the Top of that stack is" << a[top];
+		}
+	}
+
+};
+parking<car> pa;
+parking<car> pa1;
+class car
+{
+
+
+	int arrival;
+	int departure;
+	int Movedout;
+	int LicensePlate;
+
+public:		
+	car()
+	{
+		arrival=0;
+		departure=0;
+		Movedout=0;
+		LicensePlate=0;
+	}
+
+	void parkings(int no)
+	{
+
+		car s;
+		if(pa.top<pa.size)
+		{
+			cout<<"Space available for the coming car"<<endl;
+			LicensePlate=no;
+			arrival+=1;
+			s.LicensePlate=this->LicensePlate;
+			s.arrival=this->arrival;
+			pa.push(s);
+		}
+		else
+		{
+			if(pa.top>=pa.size)
+			{
+				cout<<"Parking is full"<<endl;
+				cout<<"No space for the coming car"<<endl;
+			}
+		}
+	}
+
+	void print(car a)
+	{
+		cout<<"The car having following details is departed"<<endl;
+		cout<<"Plate no : "<<a.LicensePlate<<endl;
+		cout<<"Arrival Ticket No : "<<a.arrival<<endl;
+		cout<<"No of times it is departed to let other cars move out : "<<a.Movedout<<endl;
+		cout<<"Departure No : "<<a.departure<<endl;
+
+	}
+	void departures(int no)
+	{
+		int count =0;
+		car temp;
+		int x=1;
+		while(x!=0)
+		{
+			temp.Movedout=count;
+			temp=pa.pop();
+			if(temp.LicensePlate!=no)
+			{
+				count++;
+				pa1.push(temp);
+			}
+			else
+			{
+				departure++;
+				temp.departure=this->departure;
+				print(temp);
+				x=0;
+			}
+		}
+		while(pa1.top!=-1)
+		{
+			temp=pa1.pop();
+			pa.push(temp);
+		}
+	}
+
+};
+
+int main()
+{
+	car obj;
+
+	obj.parkings(1234);
+	obj.parkings(1235);
+	obj.parkings(1236);
+	obj.parkings(1237);
+	cout<<endl;
+	obj.departures(1235);
+	obj.departures(1237);
+	obj.departures(1236);
+	system("pause");
+}
