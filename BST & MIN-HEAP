@@ -1,0 +1,177 @@
+#include<iostream>
+#include<fstream>
+#include<ostream>
+
+using namespace std;
+
+template <typename k, typename v>
+struct HeapItem
+{
+	k key;
+	v value;
+};
+template <typename k, typename v>
+class minheap {
+private:
+	HeapItem * arr;
+	int capacity;
+	int totalitems;
+public:
+	minheap()
+	{
+		arr = new heapItem<k, v>[1];
+		cap = 1;
+		titems = 0;
+	}
+	minheap(int c)
+	{
+		cap = c;
+		arr = new maxHeap<k, v>[c];
+		titems = 0;
+	}
+
+	~minheap()
+	{
+		delete[]arr;
+	}
+	bool isEmpty() const
+	{
+		if (totalitems == 0)
+			return true;
+		else return false;
+	}
+	void getMin(v& _value)
+	{
+		if (totalitems == 0)
+			assert(totalitems>0);
+		int i = 1;
+		while (i < totalitems)
+			int minnimum = arr[i];
+		value = minnimum;
+		return minnimum;
+
+	}
+	void insert(k key, v value)
+	{
+		if (cap == titems)
+		{
+			heapItem<k, v>* temp = new heapItem<k, v>[cap * 2];
+			for (int j = 1; j < cap; j++)
+			{
+				arr[j]->key = temp[j]->key;
+				arr[j]->value = temp[j]->value;
+			}
+			delete[]arr;
+			arr = temp;
+			cap *= 2;
+		}
+		totalitems++;
+		arr[totalitems]->key = key;
+		arr[totalitems]->value = value;
+		int i = totalitems;
+		while (i > 1 && arr[i]->key < h[i / 2]->key)
+		{
+			swap(arr[i], arr[i / 2]);
+			i = i / 2;
+		}
+	}
+	void heapify(int i)
+	{
+		int min = i;
+		if (2 * i <= titems && arr[2 * i]->key > arr[min]->key)
+			min = 2 * i;
+		if ((2 * i + 1) <= titems && arr[2 * i] > arr[min]->key)
+			min = 2 * i;
+		if (i != min)
+		{
+			swap(arr[i], arr[min]);
+			heapify(min);
+		}
+	}
+};
+
+class student
+{
+	int rollno;
+	string name;
+	float cgpa;
+public:
+	student()
+	{
+		cgpa = rollno = -1;
+		name = nullptr;
+	}
+	student(int r, string n, float c)
+	{
+		rollno = r;
+		cgpa = c;
+		name = n;
+	}
+	friend ostream& operator <<(ostream& out, student s);
+	void print()
+	{
+		cout << rollno << ' ' << name << ' ' << cgpa << endl;
+	}
+
+};
+
+ostream& operator <<(ostream& out, student s)
+{
+	s.print();
+	return out;
+}
+
+void buildStudentHeap(string fileName, minheap<int, student>& stdHeap)
+{
+	ifstream fin("students.txt");
+
+	if (!fin.fail())
+	{
+		char buf[500];
+		fin.getline(buf, 500);
+		int i = 0, size = 0;
+		while (buf[i] != '\0')
+		{
+			size = 10 * size + (buf[i] - '0');
+			i++;
+		}
+		fin.ignore();
+		while (fin.getline(buf, 500))
+		{
+			int rollno = 0;
+			string name;
+			float cgpa = 0;
+			i = 0;
+			while (buf[i] != ' ')
+			{
+				rollno = 10 * rollno + (buf[i] - '0');
+				i++;
+			}
+			i++;
+			while (buf[i] != ' ')
+			{
+				name += buf[i];
+				i++;
+			}
+			i++;
+			int count = 1;
+			while (buf[i] != '\0')
+			{
+				bool flag = false;
+				if (buf[i] == '.')
+				{
+					flag = true;
+				}
+				else {
+					cgpa = 10 * cgpa + (buf[i] - '0');
+					i++;
+					if (flag)
+						count *= 10;
+				}
+			}
+			cgpa /= count;
+			student s(rollno, name, cgpa);
+			stdHeap.insert(rollno, s);
+		}
+	}
+}
