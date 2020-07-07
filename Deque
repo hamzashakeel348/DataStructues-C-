@@ -1,0 +1,246 @@
+#include<iostream>
+#include<fstream>
+#include<deque>
+#include<string>
+using namespace std;
+
+template<class T> 
+class Queue
+{
+	T data[10];
+	int rear;
+	int front;
+	const int size;
+	int totalelements;
+public:
+	Queue():size(10)
+	{
+		totalelements = 0;
+		rear = 0;
+		front = 0;
+	}
+	int get_size()
+	{
+		return size;
+	}
+	bool isEmpty()
+	{
+		return !totalelements;
+	}
+	bool Front(T& d)
+	{
+		if (totalelements != 0)
+		{
+			d = data[front];
+			return false;
+		}
+		return true;
+	}
+
+
+	void print()
+	{
+		int i=0;
+		int j=front;
+		for (; i < totalelements; i++,j++)
+		{
+			if (i == size)
+				j = i % size;
+			cout << data[j] << "-";
+
+		}
+		cout << endl;
+	}
+	int removeleft()
+	{
+		int temp;
+		if(front==-1)
+		{
+			cout<<"Empty Queue"<<endl;
+			exit(1);
+		}
+		else if(front ==rear)
+		{
+			temp=data[front];
+			front=-1;
+			rear=-1;
+			return temp;
+		}
+		temp=data[front];
+		front++;
+		totalelements--;
+		return temp;
+	}
+	/*void insertleft(int a)
+	{
+	int	x=get_size()-1;
+	if(rear==x)
+	{
+	cout<<"full"<<endl;
+	}
+	else if(front==-1)
+	{
+	rear=0;
+
+	data[rear]=a;
+	}
+	data[rear++]=a;
+	totalelements++;
+	}
+	*/
+	int removeright()
+	{
+		int temp;
+		if(rear==-1)
+		{
+			cout<<"Queue is empty"<<endl;
+			exit(1);
+		}
+		else if(rear==front)
+		{
+			temp=data[rear];
+			front=-1;
+			rear=-1;
+			return temp;
+		}
+		temp=data[rear];
+		rear--;
+		totalelements--;
+		return temp;
+	}
+	void insertright(const T& element)
+	{
+		if (totalelements < size)
+		{
+			data[rear++] = element;
+			totalelements++;
+		}
+		else
+			cout << "Array Full\n";
+	}
+
+	void insertleft(const T& element)
+	{
+		if(front==-1) 
+		{
+			front=0;
+			data[++rear]=element;
+		} 
+		else if(front!=0) 
+		{
+			data[--front]=element;
+		}
+		else
+		{
+			cout<<"\n insertion is not possible, overflow!!!";
+		}
+
+		/*if (totalelements < size)
+		{
+		data[front--] = element;
+		totalelements++;
+		}
+		else
+		cout << "Array Full\n";*/
+	}
+	void outputrestricted()
+	{
+		int a=1,b=0;
+		cout<<"You have selected OUtput Restricted Queue"<<endl;
+		cout<<"You can only remove left in this queue"<<endl;
+		while(a!=0)
+		{
+			menu1();
+			cout<<"Enter choice"<<endl;
+			cin>>a;
+			if(a==1)
+			{
+				removeleft();
+			}
+			else if(a==2)
+			{
+				cout<<"Enter value"<<endl;
+				cin>>b;
+				insertright(b);
+			}
+			else if(a==3)
+			{
+
+				cout<<"Enter value"<<endl;
+				cin>>b;
+				insertleft(b);
+			}
+			else if(a==4)
+			{
+				print();
+			}
+			else if(a==0)
+			{
+				cout<<"exit"<<endl;
+			}
+		}
+
+	}
+
+	void inputrestricted()
+	{
+		int a=1,b=0;
+		cout<<"You have selected Input Restricted Queue"<<endl;
+		cout<<"You can only Insert Right in this queue"<<endl;
+		while(a!=0)
+		{
+			menu2();
+			cout<<"Enter choice"<<endl;
+			cin>>a;
+			if(a==1)
+			{
+				removeleft();
+			}
+			else if(a==2)
+			{
+				cout<<"Enter value"<<endl;
+				cin>>b;
+				insertright(b);
+			}
+			else if(a==3)
+			{
+				removeright();	
+			}
+			else if(a==4)
+			{
+				print();
+			}
+			else if(a==0)
+			{
+				cout<<"exit"<<endl;
+			}
+		}
+
+	}
+	void menu1()
+	{
+		cout<<"Press 1: to remove left"<<endl;
+		cout<<"Press 2: to insert right"<<endl;
+		cout<<"Press 3: to insert left"<<endl;
+		cout<<"Press 4: to print Queue"<<endl;
+		cout<<"Press 0: to exit from Output Restricted Queue"<<endl;
+	}
+	void menu2()
+	{
+		cout<<"Press 1: to remove left"<<endl;
+		cout<<"Press 2: to insert right"<<endl;
+		cout<<"Press 3: to remove right"<<endl;
+		cout<<"Press 4: to print Queue"<<endl;
+		cout<<"Press 0: to exit from input Restricted Queue"<<endl;
+	}
+};
+
+int main()
+{
+	Queue<int>q;
+	Queue<int>p;
+	q.outputrestricted();
+	p.inputrestricted();
+	system("pause");
+}
+
