@@ -1,0 +1,387 @@
+#include <iostream>
+#include<deque>
+#include <queue> 
+using namespace std;
+
+
+
+
+struct TNode
+{
+	int key;
+	int value;
+	TNode *left,*right;
+};
+
+class BST{
+	TNode * root;
+public:
+	BST(){
+		root=nullptr;
+	}
+	void insert(int ke){
+		insertR(ke,root);
+	}
+
+	int count_leaf()
+	{
+		int count=0;
+		if(root==NULL)
+		{
+			return 0;
+		}
+		queue<TNode *> myqueue;
+		myqueue.push(root);
+
+		while(!myqueue.empty())
+		{
+			TNode *temp;
+			temp=myqueue.front();   //Take the front element of queue 
+			myqueue.pop();        //remove the front element of queue
+			if(temp->left==NULL && temp->right==NULL)
+				count++;
+			if(temp->left)
+				myqueue.push(temp->left);
+			if(temp->right)
+				myqueue.push(temp->right);
+		}
+		return count;
+	}
+
+	void sorted_print()
+	{
+		TNode* temp = root;
+		TNode* ptr = nullptr;
+		while (temp != nullptr)
+		{
+			if (temp->left == nullptr)
+			{
+				cout << temp->value << " ";
+				temp = temp->right;
+			}
+			else
+			{
+				ptr = temp->left;
+				while (ptr->right != nullptr && ptr->right != temp)
+				{
+					ptr = ptr->right;
+				}
+				if (ptr->right == nullptr)
+				{
+					ptr->right = temp;
+					temp = temp->left;
+				}
+				else
+				{
+					ptr->right = nullptr;
+					cout <<" "<< temp->value << " ";
+					temp = temp->right;
+				}
+			}
+		}
+	}
+	bool insertR(int ke,TNode * & r){
+		if(r == nullptr){
+			TNode * temp = new TNode;
+			temp->value=ke;
+			temp->left=temp->right=nullptr;
+			r=temp;
+			return true;
+		}
+		if(ke < r->value){
+			insertR(ke,r->left);
+		}
+		else{
+			insertR(ke,r->right);
+		}
+		return false;
+	}
+	BST(BST  & obj){
+		root=nullptr;
+		copy(obj.root);
+	}
+	void copy(TNode * temp){
+		if(temp){
+			copy(temp->left);
+			insert(temp->key);
+			copy(temp->right);
+		}
+	}
+
+	void inorderPrintKeys(){
+		PrintKeys(root);
+	}
+
+	void PrintKeys(TNode * temp){
+		if(temp){
+			PrintKeys(temp->left);
+			cout<<temp->value<<" ";
+			PrintKeys(temp->right);
+		}
+	}
+
+
+	TNode* searchh(TNode* temp, int key)
+	{
+		if (temp == nullptr)
+			return nullptr;
+		if (temp->value == key)
+		{
+			return temp;
+		}
+		if (key > temp->value)
+			return searchh(temp->right, key);
+
+		return searchh(temp->left, key);
+	}
+	TNode* search(int key)
+	{
+		TNode* temp = root;
+		return searchh(temp, key);
+
+	}
+	bool searchdata(int key)
+	{
+		TNode* temp = root;
+		temp = searchh(temp, key);
+		if (temp == nullptr)
+		{
+			return false;
+		}
+		else
+			return true;
+	}
+
+
+	bool UpdateKey(int key1, int key2)
+	{
+		bool flag = false;
+		flag = searchdata(key1);
+		if (flag == false)
+			return false;
+		else
+		{
+			TNode* temp1 = root;
+			temp1 = search(key1);
+			temp1->value = key2;
+			TNode* x = temp1;
+			updateBST(x);
+			return true;
+		}	
+	}
+void updateBST(TNode* x)
+	{
+		TNode* temp = root;
+		TNode* ptr = nullptr;
+		if (temp == nullptr)
+		{
+			cout << "tree is empty";
+		}
+		else
+		{
+			while (temp != nullptr)
+			{
+				ptr = temp;
+				if (x->value < temp->value)
+					temp = temp->left;
+				else if (x->value == temp->value)
+				{
+					return;
+				}
+				else
+					temp = temp->right;
+			}
+		}
+		if (x->value< ptr->value)
+		{
+			ptr->left = x;
+			x->left = nullptr;
+			x->right = nullptr;
+		}
+		else
+		{
+			ptr->right = x;
+			x->left = nullptr;
+			x->right = nullptr;
+
+		}
+	}
+int length() const
+	{
+		return length1(root);
+	}
+	int length1(TNode * root) const
+	{
+		if (root)
+		{
+			return length1(root->left) + length1(root->right) + 1;
+		}
+		else
+			return 0;
+	}
+
+	
+	bool delleteroot(TNode *&root, int key)
+	{
+		if (root)
+		{
+			if (root->value > key)
+			{
+				return delleteroot(root->left, key);
+			}
+			else if (root->value < key)
+			{
+				return delleteroot(root->right, key);
+			}
+			else
+				return deletenode(root);
+		}
+		else 
+			return false;
+	}
+	bool deletekey(int key)
+	{
+		return delleteroot(root, key);
+	}
+	bool deletenode(TNode *& root)
+	{
+		if (root->left == nullptr && root->right == nullptr)
+		{
+			TNode * temp = root;
+			root = nullptr;
+			delete temp;
+			return true;
+		}
+		else if (root->left == nullptr)
+		{
+			TNode * temp = root;
+			root = root->right;
+			delete temp;
+			return true;
+		}
+		else if (root->right == nullptr)
+		{
+			TNode * temp = root;
+			root = root->left;
+			delete temp;
+			return true;
+		}
+		else
+		{
+			root->value = getpred(root->left);
+			return delleteroot(root->left, root->value);
+
+		}
+
+	}
+
+	int getpred(TNode * ptr)
+	{
+		int value1 = 0;
+		while (ptr != nullptr)
+		{
+			if (ptr->value > value1)
+			{
+				value1 = ptr->value;
+				root = ptr->right;
+			}
+		}
+		return value1;
+
+	}
+
+	int rec_leaf_node_count(TNode* temp)
+	{
+		if (temp == nullptr)
+			return 0;
+		else if (temp->left == nullptr && temp->right == nullptr)
+			return 1;
+		else
+			return rec_leaf_node_count(temp->left) + rec_leaf_node_count(temp->right);
+	}
+	void leaf_nodes_count()
+	{
+		TNode* temp = root;
+		int x = 0;
+		x = rec_leaf_node_count(temp);
+		cout << "total leaf nodes are:  " << x << endl;
+	}
+	void deletesubtree(int n)
+	{
+		bool flag = false;
+		flag = searchdata(n);
+		if (flag == false)
+			cout << "\nnumner not found\n";
+		else
+		{
+			TNode* temp = root;
+			temp = search(n);
+			wrap_del_subtree(temp, n);
+			int countt = 0;
+			count(temp, countt);
+			while (countt > 0)
+			{
+				deletekey(n);
+				countt--;
+			}
+		}
+	}
+	void wrap_del_subtree(TNode* &temp,int &n)
+	{
+		if (temp == nullptr)
+			return;
+		else
+		{
+			temp->value = n;
+			wrap_del_subtree(temp->left, n);
+			wrap_del_subtree(temp->right, n);
+		}
+	}
+void count(TNode* temp, int& c)
+	{
+		if (temp != nullptr)
+		{
+			c++;
+			count(temp->left, c);
+			count(temp->right, c);
+		}
+	}
+
+
+
+	//~BST(){
+	//	destructor(root);
+	//}
+	/*void destructor(TNode * & temp){
+		if(temp){
+			destructor(temp->left);
+			destructor(temp->right);
+			delete temp;
+		}
+	}*/
+};
+
+int main(){
+
+	BST obj;
+	obj.insert(2);
+	obj.insert(1);
+	obj.insert(3);
+	obj.insert(1);
+	obj.insert(5);
+	obj.insert(4);
+	obj.insert(9);
+	obj.insert(8);
+	cout<<obj.count_leaf()<<endl;
+	obj.inorderPrintKeys();
+	cout<<endl;
+	cout<<obj.length();
+	cout<<endl;
+	obj.deletekey(9);
+	obj.inorderPrintKeys();
+	cout<<endl;
+	cout<<obj.length()<<endl;
+	obj.UpdateKey(4,11);
+		system("pause");
+	return 0;
+}
