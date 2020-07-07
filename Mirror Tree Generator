@@ -1,0 +1,194 @@
+#include<iostream>
+
+using namespace std;
+
+
+#define size 50
+template <class t>
+class stack
+{
+	int top;
+	t a[size];
+public:
+	stack()
+	{
+		top = -1;
+	}
+	bool push(t x)
+	{
+		if (top == size)
+		{
+			cout << "stack is full" << endl;
+			return false;
+		}
+		else
+		{
+			top++;
+			a[top] = x;
+		}
+	}
+	t pop()
+	{
+		if (top == -1)
+		{
+			cout << "stack is empty" << endl;
+
+		}
+		else
+		{
+			t value = 0;
+			value = a[top];
+			top--;
+			return value;
+		}
+	}
+
+	bool empty()
+	{
+		if (top == -1)
+		{
+			return true;
+		}
+		return false;
+	}
+
+};
+
+struct node
+{
+	int data;
+	node* left;
+	node* right;
+public:
+	node() {}
+	node(int a)
+	{
+		left = nullptr;
+		right = nullptr;
+		data = a;
+	}
+};
+
+class BST
+{
+	node* root;
+public:
+	BST()
+	{
+		root = nullptr;
+	}
+	void preorder()
+	{
+		node* temp = root;
+		printPreorder(temp);
+	}
+	void printPreorder(node* temp)
+	{
+
+		if (temp == nullptr)
+		{
+			return;
+		}
+		cout << temp->data << " ";
+		printPreorder(temp->left);
+		printPreorder(temp->right);
+
+	}
+	void inorder()
+	{
+		node* temp = root;
+		printinorder(temp);
+	}
+	void printinorder(node* temp)
+	{
+
+		if (temp == nullptr)
+		{
+			return;
+		}
+		printinorder(temp->left);
+		cout << temp->data << " ";
+		printinorder(temp->right);
+
+	}
+	void MirrorTree()
+	{
+		BST obj;
+		stack<node*> s;
+		node* temp = root;
+		s.push(temp);
+		while (!s.empty())
+		{
+			node* aux = s.pop();
+			obj.insertionMirror(aux->data);
+			if (aux->right != nullptr)
+				s.push(aux->right);
+			if (aux->left != nullptr)
+				s.push(aux->left);
+		}
+		cout << "Mirror tree is: ";
+		obj.inorder();
+	}
+	bool insertIteratively(int d)
+	{
+		node* ptr = new node(d);
+		node* temp = root;
+		node* aux = nullptr;
+		if (root != nullptr)
+		{
+			while (temp != nullptr)
+			{
+				aux = temp;
+				if (d < temp->data)
+					temp = temp->left;
+				else if (d == temp->data)
+				{
+					cout << "Data is already existing" << endl;
+					return false;
+				}
+				else
+					temp = temp->right;
+			}
+			if (d < aux->data)
+				aux->left = ptr;
+			else
+				aux->right = ptr;
+			return true;
+		}
+		else
+		{
+			root = ptr;
+			return true;
+		}
+	}
+	void insertionMirror(int d)
+	{
+		node* ptr = new node(d);
+		node* temp = root;
+		node* aux = nullptr;
+		if (root != nullptr)
+		{
+			while (temp != nullptr)
+			{
+				aux = temp;
+				if (d < temp->data)
+					temp = temp->right;
+				else if (d == temp->data)
+				{
+					exit(0);
+				}
+				else
+					temp = temp->left;
+			}
+			if (d < aux->data)
+				aux->right = ptr;
+			else
+				aux->left = ptr;
+		}
+		else
+		{
+			root = ptr;
+		}
+	}
+};
+
