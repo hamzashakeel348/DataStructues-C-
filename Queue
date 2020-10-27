@@ -1,0 +1,73 @@
+#include <iostream>
+using namespace std; 
+  
+struct QNode { 
+    int data; 
+    QNode* next; 
+    QNode(int d) 
+    { 
+        data = d; 
+        next = NULL; 
+    } 
+}; 
+  
+class Queue { 
+private:
+    QNode *head, *tail; 
+public:
+    Queue() 
+    { 
+        head = tail = NULL; 
+    } 
+  
+    void enQueue(int x) 
+    { 
+        QNode* temp = new QNode(x); 
+        if (tail == NULL) { 
+            head = tail = temp; 
+            return; 
+        } 
+  
+        tail->next = temp; 
+        tail = temp; 
+    } 
+  
+    void deQueue() 
+    { 
+        if (head == NULL) 
+            return; 
+  
+        QNode* temp = head; 
+        head = head->next; 
+  
+        if (head == NULL) 
+            tail = NULL; 
+  
+        delete (temp); 
+    } 
+    void print()
+    {
+        QNode* temp = head; 
+        while(temp!=tail->next)
+        {
+            cout<<temp->data<<" ";
+            temp=temp->next;
+        }
+    }
+}; 
+  
+int main() 
+{ 
+  
+    Queue q; 
+    q.enQueue(10); 
+    q.enQueue(20); 
+   
+    q.enQueue(30); 
+    q.enQueue(40); 
+    q.enQueue(50); 
+    q.print();
+      q.deQueue();
+    q.print();
+  
+} 
